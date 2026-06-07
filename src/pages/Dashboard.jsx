@@ -1,42 +1,59 @@
-import { useState } from 'react'
+// src/pages/Dashboard.jsx
+import { useState, useEffect } from 'react'
 import { useApp } from '../context/AppContext'
-
-const MOCK_SPOTS = [
-  { id: 1, name: 'Philz Coffee', location: 'Costa Mesa', score: 9.1, noise: 'Quiet', wifi: 'Fast', parking: 'Easy' },
-  { id: 2, name: 'Summerfield Tea Bar', location: 'Garden Grove', score: 8.8, noise: 'Quiet', wifi: 'Moderate', parking: 'Easy' },
-  { id: 3, name: 'Wall Writers Coffee', location: 'Irvine', score: 9.3, noise: 'Moderate', wifi: 'Fast', parking: 'Easy' },
-  { id: 4, name: 'Moongoat Coffee', location: 'University Research Park', score: 8.5, noise: 'Moderate', wifi: 'Excellent', parking: 'Hard' },
-  { id: 5, name: 'Lion & Lamb', location: 'Costa Mesa', score: 9.0, noise: 'Quiet', wifi: 'Fast', parking: 'Easy' },
-  { id: 6, name: 'Kit Coffee', location: 'Newport Beach Library', score: 9.6, noise: 'Quiet', wifi: 'Excellent', parking: 'Hard' },
-]
+import { apiGetSpots, spotImageUrl } from '../api'
 
 const NOISE_OPTIONS = ['All', 'Quiet', 'Moderate', 'Lively']
 
 export default function Dashboard() {
-  const { saveSpot } = useApp()
-  const [search, setSearch] = useState('')
+  const { saveSpot, savedSpots } = useApp()
+  const [spots, setSpots]           = useState([])
+  const [loading, setLoading]       = useState(true)
+  const [error, setError]           = useState('')
+  const [search, setSearch]         = useState('')
   const [noiseFilter, setNoiseFilter] = useState('All')
-  const [saved, setSaved] = useState([])
+  const [justSaved, setJustSaved]   = useState([])
 
-  const filtered = MOCK_SPOTS.filter(spot => {
-    const matchesSearch = spot.name.toLowerCase().includes(search.toLowerCase())
-    const matchesNoise = noiseFilter === 'All' || spot.noise === noiseFilter
-    return matchesSearch && matchesNoise
+  useEffect(() => {
+    loadSpots()
+  }, [])
+
+  async function loadSpots() {
+    setLoading(true)
+    setError('')
+    try {
+      const data = await apiGetSpots()
+      setSpots(data)
+    } catch (err) {
+      setError('Could not load spots. Is the backend running?')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const savedIds = savedSpots.map(s => s.id)
+
+  const filtered = spots.filter(spot => {
+    const matchSearch = spot.name.toLowerCase().includes(search.toLowerCase()) ||
+                        spot.location.toLowerCase().includes(search.toLowerCase())
+    const matchNoise  = noiseFilter === 'All' || spot.noise === noiseFilter
+    return matchSearch && matchNoise
   })
 
-  const handleSave = (spot) => {
-    saveSpot(spot)
-    setSaved(prev => [...prev, spot.id])
+  async function handleSave(spot) {
+    await saveSpot(spot)
+    setJustSaved(prev => [...prev, spot.id])
   }
 
   return (
     <div className="page">
       <h2>Discovery Dashboard</h2>
       <p className="page-subtitle">Browse study spots near you</p>
+
       <div className="dashboard-controls">
         <input
           className="search-input"
-          placeholder="Search spots..."
+          placeholder="Search spots…"
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
@@ -46,33 +63,49 @@ export default function Dashboard() {
               key={opt}
               className={`filter-tab ${noiseFilter === opt ? 'active' : ''}`}
               onClick={() => setNoiseFilter(opt)}
-            >
-              {opt}
-            </button>
+            >{opt}</button>
           ))}
         </div>
       </div>
+
+      {loading && <p className="page-subtitle">Loading spots…</p>}
+      {error   && <p className="error-text">{error}</p>}
+
       <div className="spot-grid">
-        {filtered.map(spot => (
-          <div key={spot.id} className="spot-card">
-            <div className="spot-score">{spot.score}</div>
-            <div className="spot-image-placeholder" />
-            <h3>{spot.name}</h3>
-            <p>{spot.location}</p>
-            <div className="spot-tags">
-              <span>{spot.noise}</span>
-              <span>{spot.wifi} WiFi</span>
-              <span>{spot.parking} Parking</span>
+        {filtered.map(spot => {
+          const isSaved = savedIds.includes(spot.id) || justSaved.includes(spot.id)
+          const imgSrc  = spotImageUrl(spot.image_url)
+          return (
+            <div key={spot.id} className="spot-card">
+              <div className="spot-score">{Number(spot.score).toFixed(1)}</div>
+
+              {/* IMAGE — replace the grey placeholder when a real image exists */}
+              {imgSrc
+                ? <img src={imgSrc} alt={spot.name} className="spot-image" />
+                : <div className="spot-image-placeholder" />
+                /* ↑ PHOTO PLACEMENT: when you have a real image for a spot,
+                   store it via the API (POST /api/spots with an image file).
+                   For the 6 default spots you can place photos directly here
+                   by adding an image_url to the seed data in backend/db.js */
+              }
+
+              <h3>{spot.name}</h3>
+              <p>{spot.location}</p>
+              <div className="spot-tags">
+                <span>{spot.noise}</span>
+                <span>{spot.wifi} WiFi</span>
+                <span>{spot.parking} Parking</span>
+              </div>
+              <button
+                className={`save-btn ${isSaved ? 'saved' : ''}`}
+                onClick={() => !isSaved && handleSave(spot)}
+                disabled={isSaved}
+              >
+                {isSaved ? 'Saved ✓' : 'Save to Stack'}
+              </button>
             </div>
-            <button
-              className={`save-btn ${saved.includes(spot.id) ? 'saved' : ''}`}
-              onClick={() => handleSave(spot)}
-              disabled={saved.includes(spot.id)}
-            >
-              {saved.includes(spot.id) ? 'Saved ✓' : 'Save to Stack'}
-            </button>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )

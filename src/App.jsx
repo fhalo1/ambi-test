@@ -1,3 +1,4 @@
+// src/App.jsx
 import { AppProvider, useApp } from './context/AppContext'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Sidebar from './components/Sidebar'
@@ -6,6 +7,7 @@ import Dashboard from './pages/Dashboard'
 import MapView from './pages/MapView'
 import Ranker from './pages/Ranker'
 import StudyStack from './pages/StudyStack'
+import MySpots from './pages/MySpots'
 import Settings from './pages/Settings'
 
 function AppLayout() {
@@ -17,17 +19,17 @@ function AppLayout() {
       <main className="main-content">
         <Routes>
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/map" element={<MapView />} />
-          <Route path="/ranker" element={<Ranker />} />
-          <Route path="/stack" element={<StudyStack />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="*" element={<Navigate to="/dashboard" />} />
+          <Route path="/map"       element={<MapView />} />
+          <Route path="/ranker"    element={<Ranker />} />
+          <Route path="/stack"     element={<StudyStack />} />
+          <Route path="/myspots"   element={<MySpots />} />
+          <Route path="/settings"  element={<Settings />} />
+          <Route path="*"          element={<Navigate to="/dashboard" />} />
         </Routes>
       </main>
     </div>
   )
 }
-
 
 export default function App() {
   return (
@@ -35,7 +37,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/*" element={<AppLayout />} />
+          <Route path="/*"     element={<AppLayout />} />
         </Routes>
       </BrowserRouter>
     </AppProvider>
