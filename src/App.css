@@ -152,7 +152,7 @@ body {
 .login-input::placeholder { color: #bbb; }
 
 .login-btn {
-  background: rgba(255,255,255,0.2);
+  background: var(--accent);
   color: white;
   border: none;
   padding: 12px;
@@ -165,7 +165,10 @@ body {
   transition: background 0.2s;
 }
 
-.login-btn:hover:not(:disabled) { background: rgba(255,255,255,0.3); }
+.login-btn:hover:not(:disabled) {
+  background: var(--accent-dark);
+}
+
 .login-btn:disabled { opacity: 0.6; cursor: default; }
 
 .error-text { color: #ffaaaa; font-size: 13px; }
@@ -433,8 +436,9 @@ body {
 .secondary-btn {
   padding: 8px 20px;
   border-radius: 8px;
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--accent);
   background: white;
+  color: var(--accent);
   cursor: pointer;
   font-size: 14px;
   font-weight: 700;
