@@ -12,6 +12,7 @@ export default function Ranker() {
   const [added, setAdded]   = useState([])
   const [loading, setLoading] = useState(true)
 
+
   useEffect(() => {
     apiGetSpots()
       .then(data => setSpots(data.slice(0, 6)))  // compare top 6
@@ -69,6 +70,8 @@ export default function Ranker() {
     )
   }
 
+
+  
   return (
     <div className="page">
       <h2>The Ranker</h2>
@@ -84,7 +87,7 @@ export default function Ranker() {
               {imgSrc
                 ? <img src={imgSrc} alt={spot.name} className="ranker-image" />
                 : <div className="ranker-image-placeholder" />
-                /* ↑ PHOTO PLACEMENT: images auto-display here when spots have image_url in the DB */
+                /* ↑ photo placement */
               }
               <h3>{spot.name}</h3>
               <p style={{ fontSize: 13, color: '#888', margin: '4px 0 8px' }}>{spot.location}</p>

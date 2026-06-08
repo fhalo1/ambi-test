@@ -1,13 +1,11 @@
-// routes/saved.js — manage a user's personal saved spots (their "stack")
+// routes/saved.js — manage user(personal stack)
 const router = require('express').Router()
 const { pool } = require('../db')
 const requireAuth = require('../middleware/auth')
 
-// All routes here require a logged-in user
 router.use(requireAuth)
 
-// ── GET /api/saved ────────────────────────────────────────────────────────────
-// Returns all spots saved by the current user, with spot details joined in
+// get api
 router.get('/', async (req, res) => {
   try {
     const { rows } = await pool.query(
@@ -26,9 +24,7 @@ router.get('/', async (req, res) => {
   }
 })
 
-// ── POST /api/saved ───────────────────────────────────────────────────────────
-// Saves a spot to the user's stack
-// Body: { spot_id, user_score (optional) }
+// post api saved
 router.post('/', async (req, res) => {
   const { spot_id, user_score } = req.body
   if (!spot_id) return res.status(400).json({ error: 'spot_id required' })
@@ -47,8 +43,7 @@ router.post('/', async (req, res) => {
   }
 })
 
-// ── DELETE /api/saved/:spot_id ────────────────────────────────────────────────
-// Removes a spot from the user's stack
+// ─delete api saved spot
 router.delete('/:spot_id', async (req, res) => {
   try {
     await pool.query(

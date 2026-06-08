@@ -17,9 +17,12 @@ export default function StudyStack() {
     a.click()
   }
 
+
+  
   if (spotsLoading) return (
     <div className="page"><p className="page-subtitle">Loading your stack…</p></div>
   )
+
 
   return (
     <div className="page">

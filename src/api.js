@@ -1,11 +1,13 @@
-// src/api.js — all backend API calls live here
-// VITE_API_URL is set in .env.local for dev, and in Vercel env vars for production
+// src/api.js
+// VITE_API_URL -> .env.local for dev and vercel env vars -> production
 
 const BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 
 function getToken() {
   return localStorage.getItem('ambi_token')
 }
+
+
 
 function authHeaders(extra = {}) {
   const token = getToken()
@@ -16,7 +18,7 @@ function authHeaders(extra = {}) {
   }
 }
 
-// ── Auth ─────────────────────────────────────────────────────────────────────
+// auth
 
 export async function apiRegister(email, password) {
   const res = await fetch(`${BASE}/api/auth/register`, {
@@ -26,7 +28,7 @@ export async function apiRegister(email, password) {
   })
   const data = await res.json()
   if (!res.ok) throw new Error(data.error)
-  return data  // { token, user }
+  return data
 }
 
 export async function apiLogin(email, password) {
@@ -40,7 +42,7 @@ export async function apiLogin(email, password) {
   return data  // { token, user }
 }
 
-// ── Spots ─────────────────────────────────────────────────────────────────────
+// spots
 
 export async function apiGetSpots(filters = {}) {
   const params = new URLSearchParams(filters).toString()
@@ -50,9 +52,8 @@ export async function apiGetSpots(filters = {}) {
   return data
 }
 
-// Creates a spot with optional image file upload
+// spot creation w/ image
 export async function apiCreateSpot(formData) {
-  // formData is a FormData object (not JSON) so we don't set Content-Type
   const res = await fetch(`${BASE}/api/spots`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${getToken()}` },
@@ -73,7 +74,7 @@ export async function apiDeleteSpot(id) {
   return data
 }
 
-// ── Saved Spots (Stack) ───────────────────────────────────────────────────────
+// saved spots stack
 
 export async function apiGetSaved() {
   const res = await fetch(`${BASE}/api/saved`, { headers: authHeaders() })
@@ -103,7 +104,7 @@ export async function apiRemoveSaved(spot_id) {
   return data
 }
 
-// ── User Profile ──────────────────────────────────────────────────────────────
+// user profile
 
 export async function apiGetMe() {
   const res = await fetch(`${BASE}/api/users/me`, { headers: authHeaders() })
@@ -123,9 +124,9 @@ export async function apiUpdateMe(fields) {
   return data
 }
 
-// Helper: returns the full URL to a backend-served image
 export function spotImageUrl(image_url) {
   if (!image_url) return null
   if (image_url.startsWith('http')) return image_url
+  if (image_url.startsWith('/images/')) return image_url
   return `${BASE}${image_url}`
 }

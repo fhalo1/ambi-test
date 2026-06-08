@@ -1,14 +1,15 @@
-// db.js — sets up the PostgreSQL connection and creates tables on first run
+// db.js — sets up PostgreSQL + creates tables on first
 const { Pool } = require('pg')
 require('dotenv').config()
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  // Required for Render's hosted PostgreSQL (SSL in production)
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+  // for render hosted PostgreSQL
+  ssl: { rejectUnauthorized: false }
 })
 
-// Creates all tables if they don't exist yet
+
+// create tables if not existed
 async function initDB() {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
@@ -46,7 +47,9 @@ async function initDB() {
     );
   `)
 
-  // Seed the 6 default spots if the table is empty
+
+  
+  // seed 6 default spots if the table is empty
   const { rowCount } = await pool.query('SELECT 1 FROM spots WHERE is_default = TRUE LIMIT 1')
   if (rowCount === 0) {
     await pool.query(`
@@ -58,10 +61,10 @@ async function initDB() {
       ('Lion & Lamb',        'Costa Mesa',                9.0, 'Quiet',    'Fast',      'Easy', 33.6394, -117.9153, TRUE),
       ('Kit Coffee',         'Newport Beach',             9.6, 'Quiet',    'Excellent', 'Hard', 33.6161, -117.9289, TRUE);
     `)
-    console.log('✅ Seeded default spots')
+    console.log('Seeded default spots')
   }
 
-  console.log('✅ Database ready')
+  console.log('Database ready')
 }
 
 module.exports = { pool, initDB }

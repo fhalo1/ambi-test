@@ -5,7 +5,7 @@ import { useApp } from '../context/AppContext'
 import { apiLogin, apiRegister } from '../api'
 
 export default function Login() {
-  const [mode, setMode]         = useState('login')   // 'login' | 'register'
+  const [mode, setMode]         = useState('login')   // 'login' + 'register'
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
   const [error, setError]       = useState('')

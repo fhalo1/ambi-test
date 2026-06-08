@@ -5,8 +5,7 @@ const requireAuth = require('../middleware/auth')
 
 router.use(requireAuth)
 
-// ── GET /api/users/me ─────────────────────────────────────────────────────────
-// Returns the current user's profile
+// get api users
 router.get('/me', async (req, res) => {
   try {
     const { rows } = await pool.query(
@@ -20,9 +19,9 @@ router.get('/me', async (req, res) => {
   }
 })
 
-// ── PUT /api/users/me ─────────────────────────────────────────────────────────
-// Updates the current user's profile
-// Body: { full_name, university }
+
+
+// put api users me
 router.put('/me', async (req, res) => {
   const { full_name, university } = req.body
   try {

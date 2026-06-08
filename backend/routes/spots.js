@@ -1,4 +1,4 @@
-// routes/spots.js — CRUD operations for study spots
+// routes/spots.js for CRUD operations
 const router  = require('express').Router()
 const { pool } = require('../db')
 const requireAuth = require('../middleware/auth')
@@ -6,7 +6,7 @@ const multer  = require('multer')
 const path    = require('path')
 const fs      = require('fs')
 
-// Set up local image upload storage (images saved to /uploads folder)
+//local image upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const dir = path.join(__dirname, '..', 'uploads')
@@ -18,11 +18,9 @@ const storage = multer.diskStorage({
     cb(null, unique + path.extname(file.originalname))
   }
 })
-const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } }) // 5MB max
+const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } })
 
-// ── GET /api/spots ───────────────────────────────────────────────────────────
-// Returns all spots. No auth required (public discovery).
-// Query params: noise, wifi, parking  (optional filters)
+// get api
 router.get('/', async (req, res) => {
   try {
     const { noise, wifi, parking } = req.query
@@ -40,8 +38,7 @@ router.get('/', async (req, res) => {
   }
 })
 
-// ── GET /api/spots/:id ───────────────────────────────────────────────────────
-// Returns a single spot by id
+// get api spots
 router.get('/:id', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM spots WHERE id = $1', [req.params.id])
@@ -52,9 +49,7 @@ router.get('/:id', async (req, res) => {
   }
 })
 
-// ── POST /api/spots ──────────────────────────────────────────────────────────
-// CREATE — adds a new user-submitted spot. Requires login.
-// Accepts multipart/form-data so users can include an image file.
+// post api spots
 router.post('/', requireAuth, upload.single('image'), async (req, res) => {
   const { name, location, score, noise, wifi, parking, lat, lng } = req.body
   if (!name || !location) return res.status(400).json({ error: 'Name and location required' })
@@ -75,12 +70,11 @@ router.post('/', requireAuth, upload.single('image'), async (req, res) => {
   }
 })
 
-// ── PUT /api/spots/:id ───────────────────────────────────────────────────────
-// UPDATE — user can only edit spots they created
+
+// put api spots
 router.put('/:id', requireAuth, upload.single('image'), async (req, res) => {
   const { name, location, score, noise, wifi, parking } = req.body
   try {
-    // Check ownership
     const { rows: existing } = await pool.query('SELECT * FROM spots WHERE id=$1', [req.params.id])
     if (!existing[0]) return res.status(404).json({ error: 'Spot not found' })
     if (existing[0].created_by !== req.userId)
@@ -102,8 +96,8 @@ router.put('/:id', requireAuth, upload.single('image'), async (req, res) => {
   }
 })
 
-// ── DELETE /api/spots/:id ────────────────────────────────────────────────────
-// DELETE — user can only delete their own spots (not the seeded defaults)
+
+// delete api spots id
 router.delete('/:id', requireAuth, async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM spots WHERE id=$1', [req.params.id])

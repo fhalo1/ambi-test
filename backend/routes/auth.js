@@ -4,9 +4,11 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const { pool } = require('../db')
 
-// ── POST /api/auth/register ──────────────────────────────────────────────────
-// Creates a new user account
+// post /api/auth/register
+// creates a new user account
 // Body: { email, password }
+
+
 router.post('/register', async (req, res) => {
   const { email, password } = req.body
   if (!email || !password) return res.status(400).json({ error: 'Email and password required' })
@@ -27,9 +29,9 @@ router.post('/register', async (req, res) => {
   }
 })
 
-// ── POST /api/auth/login ─────────────────────────────────────────────────────
-// Returns a JWT token on success
-// Body: { email, password }
+// post /api/auth/login
+// returns -> JWT token on success
+// body: { email, password }
 router.post('/login', async (req, res) => {
   const { email, password } = req.body
   if (!email || !password) return res.status(400).json({ error: 'Email and password required' })
@@ -50,3 +52,5 @@ router.post('/login', async (req, res) => {
 })
 
 module.exports = router
+
+

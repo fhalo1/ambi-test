@@ -1,5 +1,5 @@
 // src/pages/MySpots.jsx
-// Users can submit their own study spots, with an optional photo and personal rating
+// user submit their own study spots, w/ photo and rating
 import { useState, useEffect } from 'react'
 import { apiGetSpots, apiCreateSpot, apiDeleteSpot, spotImageUrl } from '../api'
 import { useApp } from '../context/AppContext'
@@ -12,7 +12,7 @@ export default function MySpots() {
   const [error, setError]       = useState('')
   const [success, setSuccess]   = useState('')
 
-  // Form fields
+  // form fields
   const [name, setName]         = useState('')
   const [location, setLocation] = useState('')
   const [score, setScore]       = useState('')
@@ -23,6 +23,7 @@ export default function MySpots() {
   const [preview, setPreview]   = useState(null)
   const [submitting, setSubmitting] = useState(false)
 
+
   useEffect(() => {
     loadMySpots()
   }, [])
@@ -30,7 +31,7 @@ export default function MySpots() {
   async function loadMySpots() {
     try {
       const all = await apiGetSpots()
-      // Filter to only spots the logged-in user created
+      // filter to spots the logged-in user created
       setMySpots(all.filter(s => s.created_by === user?.id))
     } catch { /* ignore */ }
     finally { setLoading(false) }
@@ -52,7 +53,7 @@ export default function MySpots() {
     setSubmitting(true)
 
     try {
-      // Build FormData because we might include an image file
+      // build FormData for image
       const fd = new FormData()
       fd.append('name', name)
       fd.append('location', location)
@@ -66,7 +67,7 @@ export default function MySpots() {
       setSuccess('Spot added!')
       setTimeout(() => setSuccess(''), 3000)
 
-      // Reset form
+      // reset form
       setName(''); setLocation(''); setScore(''); setImage(null); setPreview(null)
       setNoise('Moderate'); setWifi('Moderate'); setParking('Easy')
       setShowForm(false)
@@ -101,16 +102,18 @@ export default function MySpots() {
         {success && <span style={{ color: '#2a7a2a', fontSize: 14 }}>{success}</span>}
       </div>
 
-      {/* ADD SPOT FORM */}
+      {/* add spot form */}
       {showForm && (
         <div className="settings-section" style={{ marginTop: 20 }}>
           <h3>New Study Spot</h3>
 
-          {/* PHOTO UPLOAD — user picks their own image here */}
+
+
+          {/* photo upload */}
           <div className="image-upload-area">
             {preview
               ? <img src={preview} alt="Preview" className="upload-preview" />
-              : <div className="upload-placeholder">📷 Add a photo</div>
+              : <div className="upload-placeholder">Add a photo</div>
             }
             <label className="upload-label">
               {preview ? 'Change photo' : 'Upload photo'}
@@ -163,11 +166,13 @@ export default function MySpots() {
         </div>
       )}
 
-      {/* MY SPOTS LIST */}
+
+
+      {/* my spot list */}
       {loading
         ? <p className="page-subtitle">Loading…</p>
         : mySpots.length === 0
-          ? <div className="empty-state"><p>You haven't added any spots yet. Hit the button above to share one!</p></div>
+          ? <div className="empty-state"><p>You haven't added any spots yet. Hit the button above to share one</p></div>
           : (
             <div className="spot-grid" style={{ marginTop: 24 }}>
               {mySpots.map(spot => {

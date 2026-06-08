@@ -18,6 +18,7 @@ export default function Sidebar() {
         <span>Ambi</span>
       </div>
 
+
       <nav className="sidebar-nav">
         <NavLink to="/dashboard" className={({ isActive }) => isActive ? 'active' : ''}>Dashboard</NavLink>
         <NavLink to="/map"       className={({ isActive }) => isActive ? 'active' : ''}>Map</NavLink>
@@ -26,6 +27,8 @@ export default function Sidebar() {
         <NavLink to="/myspots"   className={({ isActive }) => isActive ? 'active' : ''}>My Spots</NavLink>
         <NavLink to="/settings"  className={({ isActive }) => isActive ? 'active' : ''}>Settings</NavLink>
       </nav>
+
+
 
       <div className="sidebar-footer">
         <span>{user?.email}</span>

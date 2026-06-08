@@ -1,4 +1,4 @@
-// server.js — entry point for the Ambi backend
+// server.js - entry point for backend
 require('dotenv').config()
 const express = require('express')
 const cors    = require('cors')
@@ -8,38 +8,37 @@ const { initDB } = require('./db')
 const app  = express()
 const PORT = process.env.PORT || 3001
 
-// ── Middleware ────────────────────────────────────────────────────────────────
+// middleware
 
-// CORS: allow requests from the React frontend (and Vercel preview URLs)
+// cors - allow requests from React frontend + Vercel preview url
 app.use(cors({
   origin: [
     process.env.FRONTEND_URL || 'http://localhost:5173',
-    /\.vercel\.app$/          // allows any Vercel preview deployment
+    /\.vercel\.app$/          // allows vercel preview deployment
   ],
   credentials: true
 }))
 
-// Parse JSON bodies
+// parse JSON bodies
 app.use(express.json())
 
-// Serve uploaded images as static files
-// e.g. GET /uploads/1234-filename.jpg
+// serve uploaded images as static
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
-// ── Routes ────────────────────────────────────────────────────────────────────
+// routes
 app.use('/api/auth',  require('./routes/auth'))
 app.use('/api/spots', require('./routes/spots'))
 app.use('/api/saved', require('./routes/saved'))
 app.use('/api/users', require('./routes/users'))
 
-// Health check — Render pings this to confirm the service is alive
+// health check through render
 app.get('/health', (req, res) => res.json({ status: 'ok' }))
 
-// ── Start ─────────────────────────────────────────────────────────────────────
+// start
 async function start() {
   await initDB()          // create tables + seed default spots
   app.listen(PORT, () => {
-    console.log(`🚀 Ambi backend running on port ${PORT}`)
+    console.log(`Ambi backend running on port ${PORT}`)
   })
 }
 

@@ -1,12 +1,12 @@
 // src/context/AppContext.jsx
-// Global state: user session, saved spots, and loading/error state
+// user session, saved spots + loading/error state
 import { createContext, useContext, useState, useEffect } from 'react'
 import { apiGetSaved, apiSaveSpot, apiRemoveSaved } from '../api'
 
 const AppContext = createContext()
 
 export function AppProvider({ children }) {
-  // User is loaded from localStorage on page refresh
+  // user loaded from localStorage on page refresh
   const [user, setUser]           = useState(() => {
     const stored = localStorage.getItem('ambi_user')
     return stored ? JSON.parse(stored) : null
@@ -14,7 +14,7 @@ export function AppProvider({ children }) {
   const [savedSpots, setSavedSpots] = useState([])
   const [spotsLoading, setSpotsLoading] = useState(false)
 
-  // When the user logs in, fetch their saved stack from the database
+  // when logged -> fetch saved stack from db
   useEffect(() => {
     if (user) fetchSaved()
   }, [user])
@@ -25,14 +25,14 @@ export function AppProvider({ children }) {
       const data = await apiGetSaved()
       setSavedSpots(data)
     } catch {
-      // If fetch fails (e.g. token expired), silently reset
+      // if fetch fails (token expiration)
       setSavedSpots([])
     } finally {
       setSpotsLoading(false)
     }
   }
 
-  // Called after successful login/register
+  // after successful login/register
   function login(userData, token) {
     localStorage.setItem('ambi_token', token)
     localStorage.setItem('ambi_user', JSON.stringify(userData))
@@ -46,17 +46,17 @@ export function AppProvider({ children }) {
     setSavedSpots([])
   }
 
-  // Save a spot to the user's stack (persisted to DB)
+  // save spot to stack (persisted to DB)
   async function saveSpot(spot, userScore) {
     try {
       await apiSaveSpot(spot.id, userScore)
-      await fetchSaved()   // re-fetch to keep UI in sync
+      await fetchSaved()
     } catch (err) {
       console.error('Failed to save spot:', err)
     }
   }
 
-  // Remove a spot from the stack
+  // remove spot from stack
   async function removeSpot(spotId) {
     try {
       await apiRemoveSaved(spotId)
@@ -66,7 +66,7 @@ export function AppProvider({ children }) {
     }
   }
 
-  // Clear all saved spots (only locally; DB rows remain unless deleted individually)
+  // clear all saved spots (only local)
   async function clearSpots() {
     for (const s of savedSpots) {
       await apiRemoveSaved(s.id).catch(() => {})

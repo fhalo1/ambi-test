@@ -79,14 +79,10 @@ export default function Dashboard() {
             <div key={spot.id} className="spot-card">
               <div className="spot-score">{Number(spot.score).toFixed(1)}</div>
 
-              {/* IMAGE — replace the grey placeholder when a real image exists */}
+              {}
               {imgSrc
                 ? <img src={imgSrc} alt={spot.name} className="spot-image" />
                 : <div className="spot-image-placeholder" />
-                /* ↑ PHOTO PLACEMENT: when you have a real image for a spot,
-                   store it via the API (POST /api/spots with an image file).
-                   For the 6 default spots you can place photos directly here
-                   by adding an image_url to the seed data in backend/db.js */
               }
 
               <h3>{spot.name}</h3>
